@@ -4,6 +4,7 @@
 [![Python: 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](https://www.python.org/)
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.8%2B-orange.svg)](https://opencv.org/)
 [![MediaPipe](https://img.shields.io/badge/MediaPipe-0.10%2B-blueviolet.svg)](https://developers.google.com/mediapipe)
+[![Organization: Progree](https://img.shields.io/badge/Organization-Progree-blueviolet.svg)](https://github.com/Shaayan-shah)
 
 Real-time computer vision system that tracks both hands simultaneously, isolates 21 three-dimensional skeletal joints per hand, counts extended fingers across a 0 to 10 range, and classifies static hand gestures.
 
@@ -135,6 +136,13 @@ Detected 2 hand(s):
 Total combined count: 4 (valid range 0-10)
 Test passed successfully: Both hands tracked and fingers counted.
 ```
+
+---
+
+## Author & Acknowledgments
+
+* Author: Shaayan Shah ([@Shaayan-shah](https://github.com/Shaayan-shah))
+* Program: Developed for the Progree Artificial Intelligence Internship program.
 
 ---
 
