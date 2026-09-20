@@ -24,3 +24,12 @@ dependencies = [
     "numpy>=1.24.0",
     "pandas>=2.0.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Shaayan-shah/DualHand-Vision"
+Documentation = "https://github.com/Shaayan-shah/DualHand-Vision#readme"
+Issues = "https://github.com/Shaayan-shah/DualHand-Vision/issues"
+
+[project.scripts]
+dualhand-vision = "live_cam:run_live"
+dualhand-dashboard = "app:main"
