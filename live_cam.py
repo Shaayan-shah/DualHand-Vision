@@ -16,13 +16,18 @@ for p in [PARENT_DIR, MODULE_DIR]:
     if p not in sys.path:
         sys.path.insert(0, p)
 
+import argparse
 from hand_detector import HandDetector
 from visualizer import draw_hands_frame
 
 
-def run_live(cam_index: int = 0):
+def run_live(cam_index: int = 0, width: int = 1280, height: int = 720, mirror: bool = True, save_dir: str = None):
     print("Starting Live Both Hands Tracking & Finger Counter...")
     print("Controls: 'q'=Quit, 'p'=Save Snapshot")
+
+    if save_dir is None:
+        save_dir = os.path.join(MODULE_DIR, "data", "exports")
+    os.makedirs(save_dir, exist_ok=True)
 
     engine = HandDetector()
     
@@ -42,46 +47,64 @@ def run_live(cam_index: int = 0):
         return
 
     # Set preferred resolution
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
     fps = 0.0
     snapshot_idx = 0
 
-    while cap.isOpened():
-        t0 = time.time()
-        ret, frame = cap.read()
-        if not ret:
-            print("Failed to read camera frame.")
-            break
+    try:
+        while cap.isOpened():
+            t0 = time.time()
+            ret, frame = cap.read()
+            if not ret:
+                print("Failed to read camera frame.")
+                break
 
-        # Flip horizontally for intuitive mirror view
-        frame = cv2.flip(frame, 1)
+            if mirror:
+                frame = cv2.flip(frame, 1)
 
-        hands, summary = engine.process(frame, is_mirrored=True)
+            hands, summary = engine.process(frame, is_mirrored=mirror)
 
-        elapsed = time.time() - t0
-        fps = 1.0 / elapsed if elapsed > 0 else 0.0
+            elapsed = time.time() - t0
+            fps = 1.0 / elapsed if elapsed > 0 else 0.0
 
-        annotated = draw_hands_frame(frame, hands, summary, fps=fps)
+            annotated = draw_hands_frame(frame, hands, summary, fps=fps)
 
-        cv2.imshow("Both Hands & Finger Counter (Press Q to quit)", annotated)
-        key = cv2.waitKey(1) & 0xFF
+            cv2.imshow("Both Hands & Finger Counter (Press Q to quit)", annotated)
+            key = cv2.waitKey(1) & 0xFF
 
-        if key == ord('q'):
-            break
-        elif key == ord('p'):
-            export_dir = os.path.join(PARENT_DIR, "data", "exports")
-            os.makedirs(export_dir, exist_ok=True)
-            snapshot_path = os.path.join(export_dir, f"both_hands_snapshot_{snapshot_idx:03d}.png")
-            cv2.imwrite(snapshot_path, annotated)
-            print(f"Saved snapshot to: {snapshot_path}")
-            snapshot_idx += 1
+            if key == ord('q'):
+                break
+            elif key == ord('p'):
+                snapshot_path = os.path.join(save_dir, f"snapshot_{int(time.time())}_{snapshot_idx:03d}.png")
+                cv2.imwrite(snapshot_path, annotated)
+                print(f"Saved snapshot to: {snapshot_path}")
+                snapshot_idx += 1
+    except KeyboardInterrupt:
+        print("\nInterrupted by user.")
+    finally:
+        cap.release()
+        cv2.destroyAllWindows()
+        print("Live camera session ended.")
 
-    cap.release()
-    cv2.destroyAllWindows()
-    print("Live camera session ended.")
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Real-Time Dual-Hand Tracking & Finger Counter CLI")
+    parser.add_argument("--camera", type=int, default=0, help="Camera device index (default: 0)")
+    parser.add_argument("--width", type=int, default=1280, help="Target video capture width (default: 1280)")
+    parser.add_argument("--height", type=int, default=720, help="Target video capture height (default: 720)")
+    parser.add_argument("--no-mirror", dest="mirror", action="store_false", help="Disable horizontal selfie mirroring")
+    parser.add_argument("--save-dir", type=str, default=None, help="Directory to save image snapshots")
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
-    run_live()
+    args = parse_args()
+    run_live(
+        cam_index=args.camera,
+        width=args.width,
+        height=args.height,
+        mirror=args.mirror,
+        save_dir=args.save_dir
+    )
