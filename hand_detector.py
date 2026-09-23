@@ -39,22 +39,35 @@ class HandDetector:
     def __init__(self, model_path: Optional[str] = None, min_area: int = 2500):
         if model_path is None:
             current_dir = os.path.dirname(os.path.abspath(__file__))
+            default_path = os.path.join(current_dir, "models", "hand_landmarker.task")
             candidates = [
-                os.path.join(current_dir, "models", "hand_landmarker.task"),
+                default_path,
                 os.path.join(os.path.dirname(current_dir), "models", "hand_landmarker.task"),
-                os.path.join(os.path.dirname(current_dir), "OmniBio-Vision-Pro", "models", "hand_landmarker.task"),
                 "hand_landmarker.task"
             ]
             for cand in candidates:
                 if os.path.exists(cand):
                     model_path = cand
                     break
-            if model_path is None:
-                model_path = "hand_landmarker.task"
+
+            if model_path is None or not os.path.exists(model_path):
+                model_path = default_path
+                self._ensure_model_downloaded(model_path)
 
         self.model_path = model_path
         self.min_area = min_area
         self._init_landmarker()
+
+    @staticmethod
+    def _ensure_model_downloaded(target_path: str):
+        """Downloads official MediaPipe HandLandmarker task model asset if not present locally."""
+        if not os.path.exists(target_path):
+            import urllib.request
+            os.makedirs(os.path.dirname(target_path), exist_ok=True)
+            print(f"Retrieving MediaPipe HandLandmarker asset: {target_path}")
+            url = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
+            urllib.request.urlretrieve(url, target_path)
+            print("MediaPipe model asset verified.")
 
     def _init_landmarker(self):
         BaseOptions = mp.tasks.BaseOptions

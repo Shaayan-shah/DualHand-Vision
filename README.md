@@ -2,6 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python: 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](https://www.python.org/)
+[![CI](https://github.com/Shaayan-shah/DualHand-Vision/actions/workflows/ci.yml/badge.svg)](https://github.com/Shaayan-shah/DualHand-Vision/actions/workflows/ci.yml)
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.8%2B-orange.svg)](https://opencv.org/)
 [![MediaPipe](https://img.shields.io/badge/MediaPipe-0.10%2B-blueviolet.svg)](https://developers.google.com/mediapipe)
 [![Organization: Progree](https://img.shields.io/badge/Organization-Progree-blueviolet.svg)](https://github.com/Shaayan-shah)
